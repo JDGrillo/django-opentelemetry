@@ -1,0 +1,14 @@
+azure-monitor-opentelemetry
+django==4.1
+psycopg2-binary
+python-dotenv
+whitenoise
+django-sslserver
+azure-storage-blob
+azure-identity
+opentelemetry-instrumentation-django
+opentelemetry-instrumentation-psycopg2
+opentelemetry-distro
+opencensus
+psutil
+pyodbc
