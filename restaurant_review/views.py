@@ -23,6 +23,8 @@ import requests
 
 from dotenv import load_dotenv
 from azure.monitor.opentelemetry import configure_azure_monitor
+from opentelemetry.sdk.resources import Resource, ResourceAttributes
+from opentelemetry import trace
 
 logger = getLogger(__name__)
 
@@ -33,11 +35,21 @@ configure_azure_monitor(
     connection_string=appKey,
     logger_level="WARNING",
     logger_name=__name__,
+    resource=Resource.create(
+        {
+            ResourceAttributes.SERVICE_NAME: "my-restaurant-app"
+        }
+    )
 )
 
+tracer = trace.get_tracer(__name__)
+
 def index(request):
-    logger.debug("Debugging something!")
-    logger.exception('Request for index page received', extra={'index request': request})
+    with tracer.start_as_current_span("index error"):
+        logger.info("Correlated info log")
+        logger.warning("Correlated warning log")
+        logger.error("Correlated error log")
+        logger.error("Debugging something!")
     get_token()
     restaurants = Restaurant.objects.annotate(avg_rating=Avg('review__rating')).annotate(review_count=Count('review'))
     return render(request, 'restaurant_review/index.html', {'restaurants': restaurants })
@@ -82,12 +94,6 @@ def add_restaurant(request):
         restaurant.street_address = street_address
         restaurant.description = description
         Restaurant.save(restaurant)
-
-        # log a new metric for a review
-        # tmap = tag_map_module.TagMap()
-        # tmap.insert("name", name)
-        # print("tmap is", tmap)
-        # record_metric_resturant(tmap)
                 
         return HttpResponseRedirect(reverse('details', args=(restaurant.id,)))
 
@@ -150,11 +156,6 @@ def add_review(request, id):
         review.review_text = review_text
         review.image_name = image_name
         Review.save(review)
-
-        # log a new metric for a review
-        # tmap = tag_map_module.TagMap()
-        # tmap.insert("resturantId", str(id))
-        # record_metric_review(tmap)
         
     return HttpResponseRedirect(reverse('details', args=(id,)))
 

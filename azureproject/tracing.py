@@ -52,7 +52,7 @@ def instrument_app():
     #     connection_string=appKey
     # )
 
-    DjangoInstrumentor().instrument(tracer_provider=provider, is_sql_commentor_enabled=True, request_hook=request_hook, response_hook=response_hook)
-    LoggingInstrumentor().instrument(tracer_provider=provider, log_hook=log_hook)
+    DjangoInstrumentor().instrument(tracer_provider=provider, is_sql_commentor_enabled=True)
+    LoggingInstrumentor().instrument(tracer_provider=provider)
     Psycopg2Instrumentor().instrument(tracer_provider=provider, skip_dep_check=True, enable_commenter=True)
     RequestsInstrumentor().instrument(tracer_provider=provider)
