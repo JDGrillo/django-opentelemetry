@@ -1,11 +1,6 @@
 import os
 from .settings import *
 from .get_token import get_token
-from azureproject.app_insights import *
-# # from opencensus.trace import config_integration
-
-# config_integration.trace_integrations(['postgresql'])
-# config_integration.trace_integrations(['requests'])
 
 # Configure the domain name using the environment variable
 # that Azure automatically creates for us.

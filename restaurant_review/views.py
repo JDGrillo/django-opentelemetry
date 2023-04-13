@@ -1,6 +1,5 @@
 import uuid
 import os
-import azureproject.app_insights
 
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import render
@@ -12,90 +11,33 @@ from azure.identity import DefaultAzureCredential
 from azure.storage.blob import BlobServiceClient
 from requests import RequestException, exceptions
 from azureproject.get_token import get_token
-from azureproject.app_insights import *
 
-from logging import WARNING, getLogger
+from logging import getLogger
 
 from restaurant_review.models import Restaurant, Review
 
-from azure.monitor.opentelemetry import configure_azure_monitor
-from opentelemetry import trace
-
-from opentelemetry.instrumentation.django import DjangoInstrumentor
-# DjangoInstrumentor().instrument(is_sql_commentor_enabled=True)
-
-appKey = os.getenv('APPLICATIONINSIGHTS_CONNECTION_STRING')
-
 # Create your views here.
-
-from opentelemetry.instrumentation.wsgi import collect_request_attributes
-from opentelemetry.propagate import extract
-from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.trace.export import (
-    BatchSpanProcessor,
-    ConsoleSpanExporter,
-)
-from opentelemetry.trace import (
-    SpanKind,
-    get_tracer_provider,
-    set_tracer_provider,
-)
 
 import os
 import requests
-from opentelemetry import trace
-from opentelemetry.instrumentation.requests import RequestsInstrumentor
-from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.trace.export import BatchSpanProcessor
-from azure.monitor.opentelemetry.exporter import AzureMonitorTraceExporter
 
-# This line causes your calls made with the requests library to be tracked.
-DjangoInstrumentor().instrument(is_sql_commentor_enabled=True)
-
-# trace.set_tracer_provider(TracerProvider())
-# tracer = trace.get_tracer(__name__)
-# exporter = AzureMonitorTraceExporter(
-#     connection_string=os.environ["APPLICATIONINSIGHTS_CONNECTION_STRING"]
-# )
-# span_processor = BatchSpanProcessor(exporter)
-# trace.get_tracer_provider().add_span_processor(span_processor)
+from dotenv import load_dotenv
+from azure.monitor.opentelemetry import configure_azure_monitor
 
 logger = getLogger(__name__)
-logger.setLevel(WARNING)
+
+load_dotenv("./.env")
+appKey = os.environ.get("APPLICATIONINSIGHTS_CONNECTION_STRING")
 
 configure_azure_monitor(
     connection_string=appKey,
+    logger_level="WARNING",
     logger_name=__name__,
-    logging_level=WARNING,
-    tracing_export_interval_ms=15000,
 )
 
-tracer = trace.get_tracer(__name__)
-
-set_tracer_provider(TracerProvider())
-# tracer = get_tracer_provider().get_tracer(__name__)
-
-# get_tracer_provider().add_span_processor(
-#     BatchSpanProcessor(ConsoleSpanExporter())
-# )
-
-# from azure.monitor.opentelemetry.exporter import AzureMonitorTraceExporter
-# exporter = AzureMonitorTraceExporter(
-#     connection_string=appKey
-# )
-
-# from azure.monitor.opentelemetry.exporter import AzureMonitorMetricExporter
-# exporter = AzureMonitorMetricExporter(
-#     connection_string=appKey
-# )
-
-# from azure.monitor.opentelemetry.exporter import AzureMonitorLogExporter
-# exporter = AzureMonitorLogExporter(
-#     connection_string=appKey
-# )
-
 def index(request):
-    logger.warning('Request for index page received', extra={'index request': request})
+    logger.debug("Debugging something!")
+    logger.exception('Request for index page received', extra={'index request': request})
     get_token()
     restaurants = Restaurant.objects.annotate(avg_rating=Avg('review__rating')).annotate(review_count=Count('review'))
     return render(request, 'restaurant_review/index.html', {'restaurants': restaurants })

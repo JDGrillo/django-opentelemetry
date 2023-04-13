@@ -1,23 +1,6 @@
 import os
 from .settings import *
 from .get_token import get_token
-from azureproject.app_insights import *
-# from opencensus.trace import config_integration
-from opentelemetry.sdk.trace.export import (
-    BatchSpanProcessor,
-    ConsoleSpanExporter,
-)
-from opentelemetry.trace import (
-    SpanKind,
-    get_tracer_provider,
-    set_tracer_provider,
-)
-
-from opentelemetry.instrumentation.psycopg2 import Psycopg2Instrumentor
-Psycopg2Instrumentor().instrument(skip_dep_check=True)
-
-# config_integration.trace_integrations(['postgresql'])
-# config_integration.trace_integrations(['requests'])
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -39,6 +22,43 @@ DATABASES = {
         'PASSWORD': os.environ['PGDBPASS'] 
     }
 }
+
+import os
+
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'handlers': {
+#         'console': {
+#             'class': 'logging.StreamHandler',
+#         },
+#     },
+#     'root': {
+#         'handlers': ['console'],
+#         'level': 'DEBUG',
+#     },
+# }
+
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'handlers': {
+#         'console': {
+#             'class': 'logging.StreamHandler',
+#         },
+#     },
+#     'root': {
+#         'handlers': ['console'],
+#         'level': 'WARNING',
+#     },
+#     'loggers': {
+#         'django': {
+#             'handlers': ['console'],
+#             'level': os.getenv('DJANGO_LOG_LEVEL', 'WARNING'),
+#             'propagate': False,
+#         },
+#     },
+# }
 
 #load all the custom metrics...
 # register_views()

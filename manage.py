@@ -2,6 +2,7 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
+from azureproject.tracing import instrument_app
 from dotenv import load_dotenv
 
 def main():
@@ -16,6 +17,7 @@ def main():
     # When running on Azure App Service you should use the production settings.
     settings_module = "azureproject.production" if 'WEBSITE_HOSTNAME' in os.environ else 'azureproject.development'
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', settings_module)
+    instrument_app()
 
     try:
         from django.core.management import execute_from_command_line

@@ -6,9 +6,13 @@ whitenoise
 django-sslserver
 azure-storage-blob
 azure-identity
-opentelemetry-instrumentation-django
-opentelemetry-instrumentation-psycopg2
+opentelemetry-api
 opentelemetry-distro
-opencensus
+opentelemetry-exporter-otlp
+opentelemetry-exporter-otlp-proto-http
+opentelemetry-instrumentation
+opentelemetry-instrumentation-django
+opentelemetry-instrumentation-logging
+opentelemetry-instrumentation-psycopg2
 psutil
 pyodbc
