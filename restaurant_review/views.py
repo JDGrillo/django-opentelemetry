@@ -16,11 +16,6 @@ from logging import getLogger
 
 from restaurant_review.models import Restaurant, Review
 
-# Create your views here.
-
-import os
-import requests
-
 from dotenv import load_dotenv
 from azure.monitor.opentelemetry import configure_azure_monitor
 from opentelemetry.sdk.resources import Resource, ResourceAttributes
@@ -63,6 +58,8 @@ def details(request, id):
     account_url = get_account_url()
     image_path = account_url + "/" + os.environ['STORAGE_CONTAINER_NAME']
 
+    if (id == 5):
+        raise Exception("Exception for 5!!!")
     try: 
         restaurant = Restaurant.objects.annotate(avg_rating=Avg('review__rating')).annotate(review_count=Count('review')).get(pk=id)
     except Restaurant.DoesNotExist:
